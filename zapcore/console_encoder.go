@@ -68,8 +68,14 @@ func (c consoleEncoder) Clone() Encoder {
 }
 
 func (c consoleEncoder) EncodeEntry(ent Entry, fields []Field) (*buffer.Buffer, error) {
-	line := bufferpool.Get()
+	var line *buffer.Buffer
 
+	if c.SeparateBuf {
+		line = buffer.NewPool().Get()
+	} else {
+		line = bufferpool.Get()
+
+	}
 	// We don't want the entry's metadata to be quoted and escaped (if it's
 	// encoded as strings), which means that we can't use the JSON encoder. The
 	// simplest option is to use the memory encoder and fmt.Fprint.

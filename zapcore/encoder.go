@@ -341,6 +341,8 @@ type EncoderConfig struct {
 	// Configures the field separator used by the console encoder. Defaults
 	// to tab.
 	ConsoleSeparator string `json:"consoleSeparator" yaml:"consoleSeparator"`
+	// Set up a separate buf object. Defaults false
+	SeparateBuf bool
 }
 
 // ObjectEncoder is a strongly-typed, encoding-agnostic interface for adding a

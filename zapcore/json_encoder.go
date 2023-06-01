@@ -90,11 +90,19 @@ func newJSONEncoder(cfg EncoderConfig, spaced bool) *jsonEncoder {
 		cfg.NewReflectedEncoder = defaultReflectedEncoder
 	}
 
-	return &jsonEncoder{
+	enc := &jsonEncoder{
 		EncoderConfig: &cfg,
-		buf:           bufferpool.Get(),
 		spaced:        spaced,
 	}
+
+	// if set separate buf, new buffer
+	if cfg.SeparateBuf {
+		enc.buf = buffer.NewPool().Get()
+	} else {
+		enc.buf = bufferpool.Get()
+	}
+
+	return enc
 }
 
 func (enc *jsonEncoder) AddArray(key string, arr ArrayMarshaler) error {
@@ -354,7 +362,13 @@ func (enc *jsonEncoder) clone() *jsonEncoder {
 	clone.EncoderConfig = enc.EncoderConfig
 	clone.spaced = enc.spaced
 	clone.openNamespaces = enc.openNamespaces
-	clone.buf = bufferpool.Get()
+
+	// if set separate buf, new buffer
+	if clone.EncoderConfig.SeparateBuf {
+		clone.buf = buffer.NewPool().Get()
+	} else {
+		clone.buf = bufferpool.Get()
+	}
 	return clone
 }
 
